@@ -1,0 +1,134 @@
+@import 'tailwindcss';
+
+/* Custom CSS reset and base styles for Scrum Poker App */
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    sans-serif;
+  background-color: #f8fafc;
+  color: #334155;
+  line-height: 1.6;
+}
+
+/* Custom design tokens matching the screenshots */
+:root {
+  /* Colors from the design */
+  --color-primary: #3b82f6; /* Blue from cards */
+  --color-primary-dark: #2563eb;
+  --color-background: #f8fafc; /* Light gray background */
+  --color-surface: #ffffff; /* Card/surface color */
+  --color-border: #e2e8f0; /* Light border */
+  --color-text: #334155; /* Dark text */
+  --color-text-light: #64748b; /* Light text */
+  --color-success: #10b981; /* Green for success states */
+  --color-warning: #f59e0b; /* Yellow for warnings */
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
+  --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-lg:
+    0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* Border radius */
+  --radius-sm: 0.375rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+}
+
+/* Custom animations for vote reveal */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes expandWidth {
+  from {
+    width: 0%;
+  }
+  to {
+    width: var(--target-width, 100%);
+  }
+}
+
+@keyframes pulseOnce {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+}
+
+@keyframes cardFlip {
+  0% {
+    transform: rotateY(0deg);
+  }
+  50% {
+    transform: rotateY(90deg);
+  }
+  100% {
+    transform: rotateY(0deg);
+  }
+}
+
+@keyframes gentle-bounce {
+  0%,
+  20%,
+  50%,
+  80%,
+  100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(6px);
+  }
+  60% {
+    transform: translateY(3px);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.8s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-slideUp {
+  animation: slideUp 0.6s ease-out forwards;
+  opacity: 0;
+}
+
+.animate-expandWidth {
+  animation: expandWidth 1s ease-out forwards;
+  width: 0%;
+}
+
+.animate-pulseOnce {
+  animation: pulseOnce 0.8s ease-out;
+}
+
+.animate-cardFlip {
+  animation: cardFlip 0.6s ease-in-out;
+}
