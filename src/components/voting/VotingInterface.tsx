@@ -433,101 +433,9 @@ export function VotingInterface() {
   // Check if any votes have been cast
   const anyVotesCast = Object.keys(room?.votes || {}).length > 0;
 
-  // Show results if voting state is revealed
-  if (room?.votingState === 'revealed' && voteResults.length > 0 && voteStats) {
-    // If in vote adjustment mode, show voting cards along with current results
-    if (isAdjustingVote) {
-      return (
-        <div className="space-y-8">
-          {/* Poker Table with Results */}
-          <PokerTable
-            users={room?.users || []}
-            votes={room?.votes || {}}
-            currentUserId={currentUser?.id}
-            votingState="revealed"
-            currentUserVote={currentUserVote as VoteValue}
-            onCardClick={handleCardClick}
-            selfEmojiAnimation={selfEmojiAnimation}
-            onSelfEmojiComplete={handleSelfEmojiComplete}
-          />
-
-          {/* Vote Adjustment Interface */}
-          <div className="bg-white rounded-lg border-2 border-orange-200 p-6">
-            <div className="flex items-center justify-between mb-6">
-              <h3 className="text-lg font-semibold text-orange-900">
-                Adjust Your Vote
-              </h3>
-              <button
-                onClick={handleCancelVoteChange}
-                className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
-              >
-                Cancel
-              </button>
-            </div>
-
-            <div className="flex flex-wrap justify-center gap-2 mb-6">
-              {FIBONACCI_VALUES.map((value, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleVoteClick(value)}
-                  disabled={isVoting}
-                  className={`
-                    w-10 h-14 rounded-lg border-2 flex items-center justify-center text-sm font-bold
-                    transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed
-                    ${
-                      currentUserVote === value
-                        ? 'bg-blue-500 border-blue-600 text-white shadow-lg scale-105'
-                        : 'bg-white border-gray-300 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
-                    }
-                  `}
-                >
-                  {value}
-                </button>
-              ))}
-            </div>
-
-            <div className="text-center text-orange-700 text-sm">
-              Select a new vote to update your estimate. Changes will be
-              reflected immediately.
-            </div>
-          </div>
-
-          {/* Statistics Panel */}
-          <VoteDistributionChart
-            voteStats={voteStats}
-            onChangeVote={handleChangeVote}
-            onResetVoting={handleResetVoting}
-            showConfetti={showConfetti}
-          />
-        </div>
-      );
-    }
-
-    // Normal results view - just show poker table with revealed cards
-    return (
-      <div className="space-y-8">
-        {/* Poker Table with Revealed Cards */}
-        <PokerTable
-          users={room?.users || []}
-          votes={room?.votes || {}}
-          currentUserId={currentUser?.id}
-          votingState="revealed"
-          currentUserVote={currentUserVote as VoteValue}
-          onCardClick={handleCardClick}
-          selfEmojiAnimation={selfEmojiAnimation}
-          onSelfEmojiComplete={handleSelfEmojiComplete}
-        />
-
-        {/* Statistics Panel */}
-        <VoteDistributionChart
-          voteStats={voteStats}
-          onChangeVote={handleChangeVote}
-          onResetVoting={handleResetVoting}
-          showConfetti={showConfetti}
-        />
-      </div>
-    );
-  }
+  // Determine if we're showing results
+  const isShowingResults =
+    room?.votingState === 'revealed' && voteResults.length > 0 && voteStats;
 
   return (
     <div className="space-y-8">
@@ -537,14 +445,57 @@ export function VotingInterface() {
         votes={room?.votes || {}}
         currentUserId={currentUser?.id}
         votingState={room?.votingState || 'voting'}
-        onVote={handleVoteClick}
+        onVote={!isShowingResults ? handleVoteClick : undefined}
         currentUserVote={currentUserVote as VoteValue}
         onCardClick={handleCardClick}
         selfEmojiAnimation={selfEmojiAnimation}
         onSelfEmojiComplete={handleSelfEmojiComplete}
       />
 
-      {/* Reveal Button - Always available during voting */}
+      {/* Vote Adjustment Interface - Only show when adjusting vote after reveal */}
+      {isShowingResults && isAdjustingVote && (
+        <div className="bg-white rounded-lg border-2 border-orange-200 p-6">
+          <div className="flex items-center justify-between mb-6">
+            <h3 className="text-lg font-semibold text-orange-900">
+              Adjust Your Vote
+            </h3>
+            <button
+              onClick={handleCancelVoteChange}
+              className="px-4 py-2 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors font-medium"
+            >
+              Cancel
+            </button>
+          </div>
+
+          <div className="flex flex-wrap justify-center gap-2 mb-6">
+            {FIBONACCI_VALUES.map((value, index) => (
+              <button
+                key={index}
+                onClick={() => handleVoteClick(value)}
+                disabled={isVoting}
+                className={`
+                  w-10 h-14 rounded-lg border-2 flex items-center justify-center text-sm font-bold
+                  transition-all duration-200 hover:scale-105 disabled:opacity-50 disabled:cursor-not-allowed
+                  ${
+                    currentUserVote === value
+                      ? 'bg-blue-500 border-blue-600 text-white shadow-lg scale-105'
+                      : 'bg-white border-gray-300 text-gray-700 hover:border-blue-300 hover:bg-blue-50'
+                  }
+                `}
+              >
+                {value}
+              </button>
+            ))}
+          </div>
+
+          <div className="text-center text-orange-700 text-sm">
+            Select a new vote to update your estimate. Changes will be reflected
+            immediately.
+          </div>
+        </div>
+      )}
+
+      {/* Reveal Button - Only show during voting phase */}
       {room?.votingState === 'voting' && (
         <div className="text-center">
           <button
@@ -564,7 +515,17 @@ export function VotingInterface() {
         </div>
       )}
 
-      {/* Flying Emoji Picker */}
+      {/* Statistics Panel - Only show after reveal */}
+      {isShowingResults && (
+        <VoteDistributionChart
+          voteStats={voteStats}
+          onChangeVote={handleChangeVote}
+          onResetVoting={handleResetVoting}
+          showConfetti={showConfetti}
+        />
+      )}
+
+      {/* Flying Emoji Picker - Always available */}
       {emojiPicker.isVisible && (
         <FlyingEmojiPicker
           isVisible={emojiPicker.isVisible}
@@ -574,7 +535,7 @@ export function VotingInterface() {
         />
       )}
 
-      {/* Flying Emojis */}
+      {/* Flying Emojis - Always available */}
       {flyingEmojis.map((emoji) => (
         <FlyingEmoji
           key={emoji.id}
