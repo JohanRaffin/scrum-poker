@@ -13,7 +13,7 @@ const io = socketIo(server, {
   cors: {
     origin:
       process.env.NODE_ENV === 'production'
-        ? ['https://your-domain.azurewebsites.net'] // Replace with your Azure domain
+        ? ['https://scrum.mojostudio.io']
         : [
             'http://localhost:3000',
             'http://localhost:5173',
@@ -22,6 +22,9 @@ const io = socketIo(server, {
     methods: ['GET', 'POST'],
     credentials: true,
   },
+  path: '/socket.io',
+  transports: ['websocket', 'polling'],
+  allowEIO3: true,
 });
 
 // Middleware
@@ -29,7 +32,7 @@ app.use(
   cors({
     origin:
       process.env.NODE_ENV === 'production'
-        ? ['https://your-domain.azurewebsites.net'] // Replace with your Azure domain
+        ? ['https://scrum.mojostudio.io']
         : [
             'http://localhost:3000',
             'http://localhost:5173',
