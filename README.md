@@ -154,7 +154,7 @@ Found a bug? Have a cool feature idea? Contributions welcome!
 
 ## 📄 Copyright
 
-© 2025 Johan. All rights reserved.
+© 2025 Mojo Studio. All rights reserved.
 
 ---
 

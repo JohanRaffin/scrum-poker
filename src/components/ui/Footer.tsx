@@ -13,7 +13,7 @@ export function Footer({ className = '', position = 'static' }: FooterProps) {
     >
       <div className="max-w-7xl mx-auto text-center">
         <p className="text-xs text-gray-500">
-          © {new Date().getFullYear()} Johan.
+          © {new Date().getFullYear()} Mojo Studio.
           All rights reserved.
         </p>
       </div>
