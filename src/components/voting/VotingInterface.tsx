@@ -430,7 +430,7 @@ export function VotingInterface() {
     room?.users?.filter((u) => !u.isSpectator).length || 0;
   const allUsersVoted =
     nonSpectatorCount > 0 &&
-    Object.keys(room.votes || {}).length === nonSpectatorCount;
+    Object.keys(room?.votes || {}).length === nonSpectatorCount;
 
   // Check if any votes have been cast
   const anyVotesCast = Object.keys(room?.votes || {}).length > 0;
