@@ -47,7 +47,7 @@ A real-time collaborative estimation tool that transforms your sprint planning f
 
    # Option 2: Run separately
    npm run dev        # Frontend (http://localhost:5173)
-   cd server && npm start  # Backend (http://localhost:8080)
+   cd server && npm install && npm run dev  # Backend (http://localhost:8080)
    ```
 
 3. **Start Planning!**
@@ -134,7 +134,7 @@ Want to make it your own? Here are some fun extensions:
 
 - **Custom Voting Scales** - T-shirt sizes, powers of 2, or your own scale
 - **Team Themes** - Company colors, custom avatars, or branded styling
-- **Integration Hooks** - Connect with Jira, Azure DevOps, or your planning tools
+- **Integration Hooks** - Connect with Jira, GitHub, or your planning tools
 - **Advanced Analytics** - Historical data, team velocity tracking, or estimation accuracy
 
 ## 🐳 Docker Deployment
