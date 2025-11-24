@@ -8,7 +8,8 @@ WORKDIR /app
 COPY package*.json ./
 
 # Install frontend dependencies
-RUN npm ci
+# Remove package-lock.json and use npm install to avoid optional dependency issues
+RUN rm -f package-lock.json && npm install
 
 # Copy frontend source code
 COPY . .
@@ -25,7 +26,8 @@ WORKDIR /app
 COPY server/package*.json ./server/
 
 # Install server dependencies (production only)
-RUN cd server && npm ci --production
+# Remove package-lock.json and use npm install to avoid optional dependency issues
+RUN cd server && rm -f package-lock.json && npm install --production
 
 # Copy server source code
 COPY server/server.js ./server/
