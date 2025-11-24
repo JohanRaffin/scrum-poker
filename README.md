@@ -25,7 +25,7 @@ A real-time collaborative estimation tool that transforms your sprint planning f
 - **Modern Tech Stack** - React, TypeScript, Socket.IO, and Tailwind CSS
 - **Robust Architecture** - Handles disconnections, reconnections, and room persistence
 - **Mobile-First Design** - Looks stunning on phones, tablets, and desktops
-- **Production Ready** - Deployed on Azure with proper CORS and security
+- **Production Ready** - Dockerized for easy deployment with proper CORS and security
 
 ## 🚀 Quick Start
 
@@ -137,9 +137,56 @@ Want to make it your own? Here are some fun extensions:
 - **Integration Hooks** - Connect with Jira, Azure DevOps, or your planning tools
 - **Advanced Analytics** - Historical data, team velocity tracking, or estimation accuracy
 
-## 🌍 Deployment
+## 🐳 Docker Deployment
 
-Ready for production? Check out `AZURE_DEPLOYMENT.md` for step-by-step Azure deployment, or adapt for your favorite hosting platform!
+The application is containerized and ready for production deployment:
+
+### Quick Docker Start
+
+```bash
+# Build the Docker image
+docker build -t scrum-poker .
+
+# Run the container
+docker run -p 8080:8080 scrum-poker
+```
+
+### Docker Compose (Recommended)
+
+```bash
+# Create a docker-compose.yml file:
+version: '3.8'
+services:
+  scrum-poker:
+    build: .
+    ports:
+      - "8080:8080"
+    environment:
+      - NODE_ENV=production
+      - PORT=8080
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "node", "-e", "require('http').get('http://localhost:8080/health', (r) => {process.exit(r.statusCode === 200 ? 0 : 1)})"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+      start_period: 10s
+
+# Run with docker-compose
+docker-compose up -d
+```
+
+### Environment Configuration
+
+The application automatically detects production mode and configures CORS accordingly. Update the production domain in [server/server.js](server/server.js:16) before deployment:
+
+```javascript
+origin: process.env.NODE_ENV === 'production'
+  ? ['https://your-domain.com']  // Update this!
+  : ['http://localhost:5173', ...]
+```
+
+Deploy to any Docker-compatible platform: AWS ECS, Google Cloud Run, DigitalOcean, Heroku, or your own VPS!
 
 ## 🤝 Contributing
 
