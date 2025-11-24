@@ -1,6 +1,6 @@
 # Multi-stage Dockerfile for Scrum Poker application
 # Stage 1: Build the frontend
-FROM node:18-alpine AS frontend-builder
+FROM node:22-alpine AS frontend-builder
 
 WORKDIR /app
 
@@ -17,7 +17,7 @@ COPY . .
 RUN npm run build
 
 # Stage 2: Setup backend and serve application
-FROM node:18-alpine AS production
+FROM node:22-alpine AS production
 
 WORKDIR /app
 

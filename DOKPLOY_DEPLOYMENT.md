@@ -6,7 +6,7 @@ This guide will help you deploy the Scrum Poker application to your Dokploy serv
 
 1. Dokploy server set up and accessible
 2. Git repository accessible from Dokploy server
-3. Node.js 18+ runtime available in Dokploy
+3. Node.js 22+ runtime available in Dokploy
 4. Domain or subdomain configured for your application (optional)
 
 ## Project Architecture
@@ -87,7 +87,7 @@ npm run build
 cd server && npm start
 ```
 
-**Node Version**: `18` or higher
+**Node Version**: `22` or higher
 
 #### Environment Variables
 
@@ -222,7 +222,7 @@ When you deploy, the following happens automatically:
 **Solutions**:
 
 1. Check Dokploy build logs for specific errors
-2. Verify Node.js version is 18 or higher
+2. Verify Node.js version is 22 or higher
 3. Ensure all dependencies are listed in `package.json` files
 4. Try building locally: `npm install && npm run build`
 
