@@ -128,7 +128,7 @@ app.post('/api/create-room', (req, res) => {
 });
 
 app.post('/api/join-room', (req, res) => {
-  const { roomCode, userName } = req.body;
+  const { roomCode, userName, isSpectator } = req.body;
 
   if (!roomCode || !userName) {
     return res
@@ -170,10 +170,17 @@ app.post('/api/join-room', (req, res) => {
     name: sanitizedName,
     avatar: generateAvatar(usedEmojis),
     connected: true,
+    isSpectator: isSpectator || false,
   };
 
   room.users.push(user);
-  console.log('User joined:', sanitizedName, 'to room:', roomCode);
+  console.log(
+    'User joined:',
+    sanitizedName,
+    'to room:',
+    roomCode,
+    isSpectator ? '(spectator)' : ''
+  );
 
   res.json({
     user,
@@ -204,6 +211,11 @@ app.post('/api/cast-vote', (req, res) => {
   const user = room.users.find((u) => u.id === userId);
   if (!user) {
     return res.status(404).json({ error: 'User not found' });
+  }
+
+  // Prevent spectators from voting
+  if (user.isSpectator) {
+    return res.status(403).json({ error: 'Spectators cannot vote' });
   }
 
   // Handle vote removal vs "?" vote

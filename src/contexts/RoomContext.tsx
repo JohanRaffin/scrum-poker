@@ -130,7 +130,11 @@ export function RoomProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const joinRoom = async (roomCode: string, userName: string) => {
+  const joinRoom = async (
+    roomCode: string,
+    userName: string,
+    isSpectator: boolean = false
+  ) => {
     dispatch({ type: 'SET_LOADING', payload: true });
     dispatch({ type: 'SET_ERROR', payload: null });
 
@@ -140,7 +144,7 @@ export function RoomProvider({ children }: { children: ReactNode }) {
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ roomCode, userName }),
+        body: JSON.stringify({ roomCode, userName, isSpectator }),
       });
 
       if (!response.ok) {

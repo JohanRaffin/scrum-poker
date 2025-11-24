@@ -425,10 +425,12 @@ export function VotingInterface() {
   // Get current user's vote
   const currentUserVote = room?.votes?.[currentUser?.id || ''] ?? null;
 
-  // Check if all users have voted
+  // Check if all users have voted (excluding spectators)
+  const nonSpectatorCount =
+    room?.users?.filter((u) => !u.isSpectator).length || 0;
   const allUsersVoted =
-    room?.users?.length &&
-    Object.keys(room.votes || {}).length === room.users.length;
+    nonSpectatorCount > 0 &&
+    Object.keys(room.votes || {}).length === nonSpectatorCount;
 
   // Check if any votes have been cast
   const anyVotesCast = Object.keys(room?.votes || {}).length > 0;
@@ -443,7 +445,7 @@ export function VotingInterface() {
       <PokerTable
         users={room?.users || []}
         votes={room?.votes || {}}
-        currentUserId={currentUser?.id}
+        currentUser={currentUser || undefined}
         votingState={room?.votingState || 'voting'}
         onVote={!isShowingResults ? handleVoteClick : undefined}
         currentUserVote={currentUserVote as VoteValue}
@@ -509,8 +511,8 @@ export function VotingInterface() {
             {!anyVotesCast
               ? 'No votes cast yet'
               : allUsersVoted
-                ? `All ${room.users.length} players have voted!`
-                : `${Object.keys(room.votes || {}).length} of ${room.users.length} players have voted`}
+                ? `All ${nonSpectatorCount} players have voted!`
+                : `${Object.keys(room.votes || {}).length} of ${nonSpectatorCount} players have voted`}
           </p>
         </div>
       )}
@@ -519,7 +521,7 @@ export function VotingInterface() {
       {isShowingResults && (
         <VoteDistributionChart
           voteStats={voteStats}
-          onChangeVote={handleChangeVote}
+          onChangeVote={!currentUser?.isSpectator ? handleChangeVote : undefined}
           onResetVoting={handleResetVoting}
           showConfetti={showConfetti}
         />

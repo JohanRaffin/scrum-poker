@@ -3,7 +3,11 @@ import type { Room, RoomState } from '../types';
 
 interface RoomContextType extends RoomState {
   createRoom: (teamName: string, userName: string) => Promise<string | null>;
-  joinRoom: (roomCode: string, userName: string) => Promise<void>;
+  joinRoom: (
+    roomCode: string,
+    userName: string,
+    isSpectator?: boolean
+  ) => Promise<void>;
   leaveRoom: () => void;
   updateRoom: (room: Room) => void;
   setError: (error: string | null) => void;

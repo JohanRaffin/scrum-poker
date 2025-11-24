@@ -11,6 +11,7 @@ export interface User {
   name: string;
   avatar: AvatarTheme | string; // Support both new and legacy formats
   connected: boolean;
+  isSpectator?: boolean; // Spectators can observe but not vote
 }
 
 export interface Room {

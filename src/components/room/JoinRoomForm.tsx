@@ -8,6 +8,7 @@ interface JoinRoomFormProps {
 
 export function JoinRoomForm({ roomCode }: JoinRoomFormProps) {
   const [userName, setUserName] = useState('');
+  const [isSpectator, setIsSpectator] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const { joinRoom } = useRoom();
@@ -36,7 +37,7 @@ export function JoinRoomForm({ roomCode }: JoinRoomFormProps) {
     setError(null);
 
     try {
-      await joinRoom(roomCode, userName.trim());
+      await joinRoom(roomCode, userName.trim(), isSpectator);
       // Navigation will happen automatically when room state updates
     } catch (error) {
       setError(error instanceof Error ? error.message : 'Failed to join room');
@@ -75,6 +76,20 @@ export function JoinRoomForm({ roomCode }: JoinRoomFormProps) {
           required
           disabled={isLoading}
         />
+      </div>
+
+      <div className="flex items-center">
+        <input
+          type="checkbox"
+          id="isSpectator"
+          checked={isSpectator}
+          onChange={(e) => setIsSpectator(e.target.checked)}
+          disabled={isLoading}
+          className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+        />
+        <label htmlFor="isSpectator" className="ml-2 block text-sm text-gray-700">
+          Join as spectator (watch only, no voting)
+        </label>
       </div>
 
       <div className="flex space-x-3">

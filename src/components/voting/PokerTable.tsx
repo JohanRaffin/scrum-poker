@@ -11,7 +11,7 @@ type PlayerPosition = Position | string;
 interface PokerTableProps {
   users: User[];
   votes: Record<string, VoteValue>;
-  currentUserId?: string;
+  currentUser?: User;
   votingState: 'voting' | 'revealed';
   onVote?: (value: VoteValue) => void;
   currentUserVote?: VoteValue;
@@ -42,7 +42,7 @@ const FIBONACCI_VALUES: VoteValue[] = [
 export function PokerTable({
   users,
   votes,
-  currentUserId,
+  currentUser,
   votingState,
   onVote,
   currentUserVote,
@@ -50,6 +50,10 @@ export function PokerTable({
   selfEmojiAnimation,
   onSelfEmojiComplete,
 }: PokerTableProps) {
+  // Calculate non-spectator count for vote tracking
+  const nonSpectatorCount = users.filter((u) => !u.isSpectator).length;
+  const currentUserId = currentUser?.id;
+
   // Position users around the table based on count
   const getPlayerPosition = (index: number, total: number) => {
     if (total <= 2) {
@@ -183,42 +187,71 @@ export function PokerTable({
         style={getPositionStyles(position)}
         data-user-id={userId}
       >
-        {/* Voting Card */}
+        {/* Voting Card or Spectator Indicator */}
         <div className="flex flex-col items-center space-y-2">
-          <div
-            className={`
-              ${cardSize} rounded-lg border-2 flex items-center justify-center ${textSize} font-bold
-              ${showCardBack ? 'bg-blue-500 border-blue-600 text-white' : ''}
-              ${showCardValue ? 'bg-white border-blue-500 text-blue-600' : ''}
-              ${showCurrentUserVote ? 'bg-green-500 border-green-600 text-white' : ''}
-              ${showEmptyCard ? 'bg-gray-100 border-gray-300 text-gray-400 border-dashed' : ''}
-              ${isCurrentUser && hasVoted ? 'ring-2 ring-blue-400' : ''}
-              ${canThrowEmoji ? 'cursor-pointer hover:scale-105 hover:shadow-xl hover:ring-2 hover:ring-yellow-400' : ''}
-              transition-all duration-300 shadow-lg
-            `}
-            onClick={
-              canThrowEmoji
-                ? (e) => {
-                    const rect = e.currentTarget.getBoundingClientRect();
-                    const x = rect.left + rect.width / 2;
-                    const y = rect.top + rect.height / 2;
-                    onCardClick!(userId, { x, y });
-                  }
-                : undefined
-            }
-            title={
-              canThrowEmoji
-                ? isCurrentUser
-                  ? `Select emoji for yourself`
-                  : `Throw emoji at ${user.name}`
-                : undefined
-            }
-          >
-            {showCardBack && '🂠'}
-            {showCardValue && (userVote === null ? '?' : userVote)}
-            {showCurrentUserVote && (userVote === null ? '?' : userVote)}
-            {showEmptyCard && '—'}
-          </div>
+          {!user.isSpectator ? (
+            <div
+              className={`
+                ${cardSize} rounded-lg border-2 flex items-center justify-center ${textSize} font-bold
+                ${showCardBack ? 'bg-blue-500 border-blue-600 text-white' : ''}
+                ${showCardValue ? 'bg-white border-blue-500 text-blue-600' : ''}
+                ${showCurrentUserVote ? 'bg-green-500 border-green-600 text-white' : ''}
+                ${showEmptyCard ? 'bg-gray-100 border-gray-300 text-gray-400 border-dashed' : ''}
+                ${isCurrentUser && hasVoted ? 'ring-2 ring-blue-400' : ''}
+                ${canThrowEmoji ? 'cursor-pointer hover:scale-105 hover:shadow-xl hover:ring-2 hover:ring-yellow-400' : ''}
+                transition-all duration-300 shadow-lg
+              `}
+              onClick={
+                canThrowEmoji
+                  ? (e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = rect.left + rect.width / 2;
+                      const y = rect.top + rect.height / 2;
+                      onCardClick!(userId, { x, y });
+                    }
+                  : undefined
+              }
+              title={
+                canThrowEmoji
+                  ? isCurrentUser
+                    ? `Select emoji for yourself`
+                    : `Throw emoji at ${user.name}`
+                  : undefined
+              }
+            >
+              {showCardBack && '🂠'}
+              {showCardValue && (userVote === null ? '?' : userVote)}
+              {showCurrentUserVote && (userVote === null ? '?' : userVote)}
+              {showEmptyCard && '—'}
+            </div>
+          ) : (
+            <div
+              className={`
+                ${cardSize} rounded-lg border-2 border-purple-300 bg-purple-50 flex items-center justify-center ${textSize}
+                ${canThrowEmoji ? 'cursor-pointer hover:scale-105 hover:shadow-lg hover:ring-2 hover:ring-yellow-400' : ''}
+                transition-all duration-300
+              `}
+              onClick={
+                canThrowEmoji
+                  ? (e) => {
+                      const rect = e.currentTarget.getBoundingClientRect();
+                      const x = rect.left + rect.width / 2;
+                      const y = rect.top + rect.height / 2;
+                      onCardClick!(userId, { x, y });
+                    }
+                  : undefined
+              }
+              title={
+                canThrowEmoji
+                  ? isCurrentUser
+                    ? `Select emoji for yourself`
+                    : `Throw emoji at ${user.name}`
+                  : undefined
+              }
+            >
+              <span className="text-purple-500">👀</span>
+            </div>
+          )}
 
           {/* User Avatar and Name */}
           <div className="flex flex-col items-center space-y-1">
@@ -301,7 +334,7 @@ export function PokerTable({
             </div>
             <div className="text-sm text-green-600">
               {votingState === 'voting'
-                ? `${Object.keys(votes).length}/${users.length} voted`
+                ? `${Object.keys(votes).length}/${nonSpectatorCount} voted`
                 : `Average: ${(() => {
                     const numericVotes = Object.values(votes).filter(
                       (v) => v !== null && typeof v === 'number'
@@ -325,7 +358,7 @@ export function PokerTable({
       </div>
 
       {/* Voting Cards for Current User */}
-      {votingState === 'voting' && onVote && (
+      {votingState === 'voting' && onVote && !currentUser?.isSpectator && (
         <div className="mt-12">
           <div className="text-center mb-6">
             <h4 className="text-lg font-medium text-gray-700">
@@ -358,6 +391,18 @@ export function PokerTable({
                 {value}
               </button>
             ))}
+          </div>
+        </div>
+      )}
+
+      {/* Spectator Message */}
+      {votingState === 'voting' && currentUser?.isSpectator && (
+        <div className="mt-16 text-center">
+          <div className="inline-flex items-center gap-2 px-6 py-3 bg-purple-50 border-2 border-purple-200 rounded-lg">
+            <span className="text-2xl">👀</span>
+            <span className="text-purple-800 font-medium">
+              You're watching as a spectator
+            </span>
           </div>
         </div>
       )}
