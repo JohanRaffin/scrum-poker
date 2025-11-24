@@ -60,7 +60,7 @@ export function Home() {
               src="/scrum-poker.webp"
               alt="Scrum Poker Logo"
               className="w-full h-full object-contain"
-              fetchpriority="high"
+              fetchPriority="high"
               loading="eager"
             />
           </div>
