@@ -54,7 +54,7 @@ export function RoomHeader() {
           <div className="flex items-center space-x-3">
             <div className="w-12 h-12">
               <img
-                src="/scrum-poker.png"
+                src="/scrum-poker.webp"
                 alt="Scrum Poker"
                 className="w-full h-full object-contain"
               />

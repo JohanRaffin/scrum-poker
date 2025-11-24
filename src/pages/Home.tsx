@@ -57,7 +57,7 @@ export function Home() {
         <div className="mb-8">
           <div className="w-36 h-36 mx-auto mb-6">
             <img
-              src="/scrum-poker.png"
+              src="/scrum-poker.webp"
               alt="Scrum Poker Logo"
               className="w-full h-full object-contain"
             />
