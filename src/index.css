@@ -11,6 +11,7 @@ body {
     system-ui,
     -apple-system,
     sans-serif;
+  font-display: swap;
   background-color: #f8fafc;
   color: #334155;
   line-height: 1.6;
